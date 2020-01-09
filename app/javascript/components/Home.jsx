@@ -37,6 +37,8 @@ class TomodoroTimer extends React.Component {
 
     document.getElementById("playPauseButton").addEventListener("click", function(evt) {
       evt.preventDefault();
+      document.getElementById("alarm").play();
+      document.getElementById("alarm").pause();
       self.setPlayPauseButtonText();
 
       if (!self.state.running) {
