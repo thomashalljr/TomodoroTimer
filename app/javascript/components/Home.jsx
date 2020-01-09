@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+var intervalWorker;
+
 class TomodoroTimer extends React.Component {
 
   constructor(props) {
@@ -22,6 +24,7 @@ class TomodoroTimer extends React.Component {
 
   componentDidMount() {
     var self = this;
+    intervalWorker = new Worker("javascripts/workers/intervalWorker.js");
     document.title = "Tomodoro Timer";
 
     document.getElementById("updateButton").addEventListener("click", function(evt) {
@@ -42,26 +45,30 @@ class TomodoroTimer extends React.Component {
       self.setPlayPauseButtonText();
 
       if (!self.state.running) {
-        self.interval = setInterval(self.elapseTime.bind(self), 1000);
+        intervalWorker.postMessage("setInterval");
         self.setState({ running: true });
       } else {
-        clearInterval(self.interval);
+        intervalWorker.postMessage("clearInterval");
         self.setState({ running: false });
       }
+    });
+
+    intervalWorker.addEventListener("message", function(event) {
+      self.elapseTime();
     });
   }
 
   componentWillUnmount() {
-    clearInterval(this.interval);
+    intervalWorker.postMessage("clearInterval");
   }
 
   elapseTime() {
+    console.log("Elapse time every one second!");
     this.setState({ timeCountingDown: this.minusTime() });
 
     if (this.state.timeCountingDown == 0) {
-      alert("Break time!");
       document.getElementById("alarm").play();
-      clearInterval(this.interval);
+      intervalWorker.postMessage("clearInterval");
       this.setPlayPauseButtonText();
 
       var initialTime = this.state.customTimer;
