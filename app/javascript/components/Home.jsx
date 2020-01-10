@@ -25,16 +25,17 @@ class TomodoroTimer extends React.Component {
   componentDidMount() {
     var self = this;
     intervalWorker = new Worker("javascripts/workers/intervalWorker.js");
-    document.title = "Tomodoro Timer";
 
     document.getElementById("updateButton").addEventListener("click", function(evt) {
       evt.preventDefault();
       var initialTime = self.state.customTimer;
 
-      if (initialTime != "" && initialTime > 0) {
+      if (initialTime != "" && initialTime > 0 && initialTime < 60) {
         self.setState({ timeCountingDown: initialTime * 60 * 1000 });
       } else if (initialTime < 1) {
         alert("Please enter time of 1 or more minutes.");
+      } else if (initialTime > 59) {
+        alert("Please enter time less than one hour.");
       }
     });
 
@@ -63,7 +64,6 @@ class TomodoroTimer extends React.Component {
   }
 
   elapseTime() {
-    console.log("Elapse time every one second!");
     this.setState({ timeCountingDown: this.minusTime() });
 
     if (this.state.timeCountingDown == 0) {
@@ -95,25 +95,39 @@ class TomodoroTimer extends React.Component {
     var playPauseButton = document.getElementById("playPauseButton");
     var playPauseButtonText = playPauseButton.textContent;
 
-    if (playPauseButtonText == "Play") {
-      playPauseButton.textContent = "Pause";
+    if (playPauseButtonText == "Start") {
+      playPauseButton.textContent = "Stop";
     } else {
-      playPauseButton.textContent = "Play";
+      playPauseButton.textContent = "Start";
     }
   }
 
   render() {
     return (
-      <div id="container">
-        <form name="customTimer">
-          <div><label>How many minutes should timer be?</label></div>
-          <div id="updateAndPlay">
-            <input type="number" id="initialTime" min="1" maxLength="2" value={this.state.value} onChange={this.handleCustomTimeChange} />
-            <button id="updateButton">Update</button>
-            <button id="playPauseButton">Play</button>
+      <div id="customContainer">
+        <div className="container">
+          <form name="customTimer">
+            <div className="row">
+              <div className="col-sm">
+                <label>How many minutes for timer?</label>
+              </div>
+            </div>
+            <div className="row justify-content-md-center" id="updateAndPlay">
+              <div className="col-sm-auto">
+                <input type="number" id="initialTime" min="1" maxLength="2" value={this.state.value} onChange={this.handleCustomTimeChange} />
+              </div>
+              <div className="col-sm-auto">
+                <button id="updateButton">Update</button>
+              </div>
+              <div className="col-sm-auto">
+                <button id="playPauseButton">Start</button>
+              </div>
+            </div>
+          </form>
+          <div className="row">
+            <div className="col-sm" id="timeElapsed">{moment.utc(this.state.timeCountingDown).format("mm:ss")}</div>
           </div>
-        </form>
-        <div id="timeElapsed">{moment.utc(this.state.timeCountingDown).format("mm:ss")}</div>
+        </div>
         <audio id="alarm" src="./audio/alarm.mp3" preload="auto" type="audio/mpeg" />
       </div>
     );
@@ -122,6 +136,6 @@ class TomodoroTimer extends React.Component {
 
 export default () => (
   <div className="app">
-    { React.createElement(TomodoroTimer, { initialTime: 0.1, restingTime: 1 }) }
+    { React.createElement(TomodoroTimer, { initialTime: 25, restingTime: 1 }) }
   </div>
 );
