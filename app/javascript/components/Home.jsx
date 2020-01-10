@@ -32,10 +32,8 @@ class TomodoroTimer extends React.Component {
 
       if (initialTime != "" && initialTime > 0 && initialTime < 60) {
         self.setState({ timeCountingDown: initialTime * 60 * 1000 });
-      } else if (initialTime < 1) {
-        alert("Please enter time of 1 or more minutes.");
-      } else if (initialTime > 59) {
-        alert("Please enter time less than one hour.");
+      } else if (initialTime < 1 || initialTime > 59) {
+        alert("Please enter time 1-59 minutes.");
       }
     });
 
