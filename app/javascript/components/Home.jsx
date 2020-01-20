@@ -23,7 +23,7 @@ class TomodoroTimer extends React.Component {
   }
 
   componentDidMount() {
-    var self = this;
+    const self = this;
     intervalWorker = new Worker("javascripts/workers/intervalWorker.js");
 
     document.getElementById("updateButton").addEventListener("click", function(evt) {
@@ -33,7 +33,7 @@ class TomodoroTimer extends React.Component {
       if (initialTime != "" && initialTime > 0 && initialTime < 60) {
         self.setState({ timeCountingDown: initialTime * 60 * 1000 });
       } else if (initialTime < 1 || initialTime > 59) {
-        alert("Please enter time 1-59 minutes.");
+        alert("Please enter time from 1 to 59 minutes.");
       }
     });
 
@@ -52,7 +52,7 @@ class TomodoroTimer extends React.Component {
       }
     });
 
-    intervalWorker.addEventListener("message", function(event) {
+    intervalWorker.addEventListener("message", function(evt) {
       self.elapseTime();
     });
   }
@@ -134,6 +134,6 @@ class TomodoroTimer extends React.Component {
 
 export default () => (
   <div className="app">
-    { React.createElement(TomodoroTimer, { initialTime: 25, restingTime: 1 }) }
+    { React.createElement(TomodoroTimer, { initialTime: 25 }) }
   </div>
 );
