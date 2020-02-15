@@ -65,6 +65,8 @@ class TomodoroTimer extends React.Component {
     this.setState({ timeCountingDown: this.minusTime() });
 
     if (this.state.timeCountingDown == 0) {
+      // Vibrate device using Chrome for Android
+      navigator.vibrate([500, 250, 500, 250, 500, 250, 500, 250, 500, 250, 500]);
       document.getElementById("alarm").play();
       intervalWorker.postMessage("clearInterval");
       this.setPlayPauseButtonText();
